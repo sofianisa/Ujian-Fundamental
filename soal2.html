@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Mading</title>
+
+    <style>
+        tr,td,table {
+            border : 1px solid black;
+            border-collapse : collapse;
+            padding: 2px 50px;
+            margin : 0 auto;
+            text-align : center;
+        }
+
+    </style>
+</head>
+
+<body>
+    <center>
+        <div id="divlogin">
+                <h1 style="color:#0000A0";>JADWAL KEGIATAN OLAHRAGA</h1>
+                <br>
+                Username : <input type="text" id="username" /> <br><br>
+                Password : <input type="password" id="password" /> <br><br>
+                <button onclick="iniLogin()">Login</button><br>
+            </div>
+            <h2></h2>
+        </div>
+        <div>
+            <table id="table">
+                    <tr>
+                        <td>No</td>
+                        <td>Kegiatan</td>
+                        <td>Hari</td>
+                        <td>Poster</td>
+                        <td>Act</td>
+                    </tr>
+                <tbody id="body">
+
+                </tbody>
+                <tfoot id="foot">
+
+                </tfoot>
+            </table>
+        <h3></h3>
+        <p></p>
+        </div>
+    </center>
+<script>
+class User {
+    constructor(a,b,c) {
+        this.nama = a,
+            this.katasandi = b,
+            this.role = c
+    }
+}
+
+class List {
+    constructor(a,b,c) {
+        this.item = a,
+            this.hari = b,
+            this.gambar = c
+    }
+}
+
+var dataUser = [
+    new User('sofia', 'aaa', 'admin'),
+    new User('user', 'bbb', 'user')
+]
+
+var listdata = [
+    new List('Bulutangkis', 'Senin', ''),
+    new List('Futsal', 'Selasa', ''),
+    new List('Berenang','Rabu', '')
+]
+
+var dataUserLogin = {}
+
+const iniLogin = () => {
+    var user = document.getElementById('username').value
+    var sandi = document.getElementById('password').value
+    var login = false
+    for (var i = 0; i < dataUser.length; i++) {
+        if (user == dataUser[i].nama&&sandi == dataUser[i].katasandi) {
+            login = true
+            dataUserLogin = dataUser[i]
+        }
+    }
+
+    if (login) {
+        if (dataUserLogin.role =='admin') {
+            document.getElementById("body").innerHTML = 
+                    `<tbody>
+
+                    </tbody>`
+            document.getElementById("foot").innerHTML = 
+                    `<tfoot>
+                        <tr>
+                            <td></td>
+                            <td><input type="text" class="addkegiatan"/></td>
+                            <td>
+                                <select class="addkegiatan">
+                                    <option>Senin</option>
+                                    <option>Selasa</option>
+                                    <option>Rabu</option>
+                                    <option>Kamis</option>
+                                    <option>Jumat</option>
+                                </select>
+                            </td>
+                            <td><input type="text" class="addkegiatan"></td>
+                            <td><button onclick="onAddkegiatanClick()">Tambah</button></td>
+                        </tr>
+                    </tfoot>
+                </table>`
+            document.getElementsByTagName("h3")[0].innerHTML = `${dataUserLogin.role}`
+            document.getElementsByTagName("p")[0].innerHTML = `<button onclick="logout()">Logout</button>`
+
+            printData(listdata)
+            
+        } else {
+            document.getElementById("body").innerHTML = 
+                    `<tbody>
+
+                    </tbody>`
+            document.getElementsByTagName("h3")[0].innerHTML = `${dataUserLogin.nama}`
+            document.getElementsByTagName("p")[0].innerHTML = `<button onclick="logout()">Logout</button>`
+
+            printItem(listdata)
+
+        }
+    } else {
+        document.getElementsByTagName('h3')[0].innerHTML = `User tidak ditemukan atau Password salah`
+    }
+}
+
+const printItem = (a) => {
+    var output = ''
+    a.forEach((val, index) => {
+        output += `<tr>
+            <td>${index + 1}</td>
+            <td>${val.item}</td>
+            <td>${val.hari}</td>
+            <td> <img src=${val.gambar} height='100px'/> </td>
+            <td> </td>
+        </tr>`
+
+    });
+    document.getElementsByTagName('tbody')[0].innerHTML = output
+}
+
+var indexedit = -1
+var inddexdel = -2
+const printData = (a) => {
+    var output = ''
+    a.forEach((val, index) => {
+        if (index ==indexedit) {
+            output += `<tr>
+                            <td>${index + 1}</td>
+                            <td><input type="text" id="edititem${index}"></td>
+                            <td>
+                                <select id="edithari${index}">
+                                <option> Senin</option>
+                                <option> Selasa</option>
+                                <option> Rabu</option>
+                                <option> Kamis</option>
+                                <option> Jumat</option>
+                                </select>    
+                            </td>                            
+                            <td><input type="text" id="editimg${index}"></td>
+                            <td><button onclick="cancel()">cancel</button><button onclick="save(${index})">save</button></td>
+                      </tr>`
+        } else if (index == inddexdel) {
+            output += `<tr>
+                            <td>${index + 1}</td>
+                            <td>${val.item}</td>
+                            <td>${val.hari}</td>
+                            <td><img src=${val.gambar} height='100px'/></td>
+                            <td><button onclick="cancelDel()">No</button><button onclick="confirmDel(${index})">Yes</button></td>
+                        </tr>`
+        } else {
+            output += `<tr>
+                            <td>${index + 1}</td>
+                            <td>${val.item}</td>
+                            <td>${val.hari}</td>
+                            <td><img src=${val.gambar} height='100px'/></td>
+                            <td>
+                                <button onclick="hapus(${index})">delete</button>
+                                <button onclick="edit(${index})">edit</button>
+                            </td>
+                        </tr>`
+
+                }
+        })
+    document.getElementsByTagName('tbody')[0].innerHTML = output
+}
+
+const hapus = (apa) => {
+    inddexdel = apa
+    printData(listdata)
+}
+const cancelDel = () => {
+    inddexdel = -2
+    printData(listdata)
+}
+const confirmDel = (apa) => {
+    listdata.splice(apa, 1)
+    inddexdel = -1
+    printData(listdata)
+}
+const edit = (apa) => {
+    indexedit = apa
+    printData(listdata)
+}
+
+const cancel = () => {
+    indexedit = -1
+    printData(listdata)
+}
+
+const onAddkegiatanClick = () => {
+    var input = document.getElementsByClassName('addkegiatan')
+    var itembaru = input[0].value
+    var haribaru = input[1].value
+    var imagebaru = input[2].value
+    listdata.push(new List(itembaru, haribaru, imagebaru))
+    printData(listdata)
+}
+
+const save = (apa) => {
+    var newitem = document.getElementById(`edititem${apa}`).value
+    var newhari = document.getElementById(`edithari${apa}`).value
+    var newimg = document.getElementById(`editimg${apa}`).value
+    if (newitem) {
+        listdata[apa].item = newitem
+    }
+    if (newhari !== listdata[apa].hari) {
+        listdata[apa].hari = newhari
+    }
+    if (newimg) {
+        listdata[apa].gambar = newimg
+    }
+    indexedit = -1
+    printData(listdata)
+}
+
+const logout = () => {
+    var konfirmLogout = confirm("Apakah anda yakin ingin Logout?")
+    if (konfirmLogout) {
+        document.getElementById("body").innerHTML = ``
+        document.getElementById("foot").innerHTML = ``
+        document.getElementsByTagName("h3")[0].innerHTML = ``
+        document.getElementsByTagName('p')[0].innerHTML=``
+        document.getElementsByTagName("table")[0].innerHTML = 
+            `<table>
+                <thead>
+                    <tr>
+                        <td>No</td>
+                        <td>Kegiatan</td>
+                        <td>Hari</td>
+                        <td>Poster</td>
+                        <td>Act</td>
+                    </tr>
+                </thead>
+                <tbody> </tbody>
+                </table>`
+
+        }
+    }
+</script>
+</body>
+</html>
